@@ -1,12 +1,13 @@
 {
   "name": "tiktok",
   "version": "1.0.0",
-  "description": "A Remotion template for TikTok-style captions",
+  "description": "Explicando modelos de negocio · Parte 1: E-commerce — fondo cinético vertical para TikTok (Remotion)",
   "repository": {},
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
     "@remotion/cli": "4.0.518",
+    "@remotion/google-fonts": "4.0.518",
     "@remotion/zod-types": "4.0.518",
     "@remotion/animation-utils": "4.0.518",
     "@remotion/layout-utils": "4.0.518",
@@ -20,8 +21,6 @@
   },
   "devDependencies": {
     "@remotion/eslint-config-flat": "4.0.518",
-    "@remotion/install-whisper-cpp": "4.0.518",
-    "@remotion/captions": "4.0.518",
     "@types/react": "19.2.7",
     "@types/web": "0.0.166",
     "eslint": "9.19.0",
@@ -33,7 +32,7 @@
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
-    "create-subtitles": "node sub.mjs"
+    "render": "remotion render EcommercePart1 out/EcommercePart1.mp4 --codec=h264"
   },
   "sideEffects": [
     "*.css"
