@@ -1,86 +1,106 @@
 // =============================================================================
-// Escena 4 — NINGÚN PRODUCTO DURA (≈ 12 s)
-// Titular · dos líneas secuenciales · una curva sutil que sube y luego cae
-// (el ciclo de vida de un producto ganador). Nada recargado.
+// Escena 4 — NINGÚN PRODUCTO DURA (12 s · 720 frames a 60 fps)
+// -----------------------------------------------------------------------------
+// Titular con entrada potente (palabra a palabra + punch) · gráfica del ciclo
+// de vida que se dibuja sola con área de acento y etiquetas en el pico y en la
+// caída · dos líneas de texto secuenciales.
+//
+// ⏱️ Los `delay` están en FRAMES a 60 fps (60 = 1 segundo).
 // =============================================================================
 
 import React from "react";
+import { AbsoluteFill } from "remotion";
+import { LifecycleChart } from "../components/LifecycleChart";
+import { SceneLayout } from "../components/SceneLayout";
+import { Enter } from "../motion/Enter";
+import { SplitText } from "../motion/SplitText";
+import { useParallax } from "../motion/hooks";
+import { SPRING_PUNCH, theme } from "../theme";
 import type { SceneProps } from "./types";
-import { interpolate, useCurrentFrame } from "remotion";
-import { Reveal } from "../components/anim";
-import { SafeZone } from "../components/SafeZone";
-import { theme } from "../theme";
 
-// Curva sube-y-baja dibujada con animación de trazo (strokeDashoffset).
-const LifecycleCurve: React.FC<{ delay: number }> = ({ delay }) => {
-  const frame = useCurrentFrame();
-  const progress = interpolate(frame, [delay, delay + 55], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+export const Scene4Ciclo: React.FC<SceneProps> = ({ durationInFrames }) => {
+  const drift = useParallax(durationInFrames, -28);
 
   return (
-    <svg width={720} height={180} viewBox="0 0 720 180" fill="none">
-      {/* Línea base tenue */}
-      <line
-        x1={0}
-        y1={150}
-        x2={720}
-        y2={150}
-        stroke="rgba(255,255,255,0.08)"
-        strokeWidth={2}
-      />
-      {/* La curva: sube hasta el pico y vuelve a caer */}
-      <path
-        d="M0,150 C 180,150 210,30 360,30 C 510,30 540,150 720,150"
-        stroke={theme.colors.accent}
-        strokeWidth={5}
-        strokeLinecap="round"
-        pathLength={1}
-        strokeDasharray={1}
-        strokeDashoffset={1 - progress}
-      />
-    </svg>
-  );
-};
+    <AbsoluteFill style={{ backgroundColor: theme.colors.background }}>
+      <SceneLayout durationInFrames={durationInFrames}>
+        <div style={{ transform: `translateY(${drift}px)` }}>
+          {/* Titular: entrada potente, palabra a palabra */}
+          <div
+            style={{
+              fontSize: 88,
+              fontWeight: 900,
+              textTransform: "uppercase",
+              letterSpacing: -2,
+              color: theme.colors.text,
+              lineHeight: 1.02,
+              marginBottom: 34,
+            }}
+          >
+            <SplitText
+              text="Ningún producto dura."
+              by="word"
+              delay={0}
+              stagger={6}
+              y={44}
+              blur={12}
+              config={SPRING_PUNCH}
+            />
+          </div>
 
-export const Scene4Ciclo: React.FC<SceneProps> = () => {
-  return (
-    <SafeZone>
-      {/* Titular */}
-      <Reveal delay={0}>
-        <div
-          style={{
-            fontSize: 92,
-            fontWeight: 800,
-            textTransform: "uppercase",
-            letterSpacing: -1,
-            color: theme.colors.text,
-            marginBottom: 60,
-          }}
-        >
-          Ningún producto dura.
+          {/* La gráfica del ciclo de vida */}
+          <Enter delay={60} y={24}>
+            <LifecycleChart delay={85} drawDuration={190} />
+          </Enter>
+
+          {/* Texto secuencial */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 34,
+              maxWidth: 860,
+              marginTop: 18,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 42,
+                fontWeight: 500,
+                color: theme.colors.muted,
+                lineHeight: 1.3,
+              }}
+            >
+              <SplitText
+                text="El que hoy funciona, en dos meses lo copia todo el mundo."
+                by="word"
+                delay={400}
+                stagger={4}
+                y={18}
+                blur={5}
+              />
+            </div>
+
+            <div
+              style={{
+                fontSize: 46,
+                fontWeight: 700,
+                color: theme.colors.text,
+                lineHeight: 1.3,
+              }}
+            >
+              <SplitText
+                text="Esto no se monta una vez. Se ajusta cada semana."
+                by="word"
+                delay={520}
+                stagger={4}
+                y={18}
+                blur={5}
+              />
+            </div>
+          </div>
         </div>
-      </Reveal>
-
-      {/* La curva del ciclo de vida */}
-      <Reveal delay={30} style={{ marginBottom: 60 }}>
-        <LifecycleCurve delay={40} />
-      </Reveal>
-
-      {/* Líneas secuenciales */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 40, maxWidth: 820 }}>
-        <Reveal delay={95}>
-          <div style={{ fontSize: 44, fontWeight: 500, color: theme.colors.muted, lineHeight: 1.35 }}>
-            El que hoy funciona, en dos meses lo copia todo el mundo.
-          </div>
-        </Reveal>
-        <Reveal delay={150}>
-          <div style={{ fontSize: 46, fontWeight: 700, color: theme.colors.text, lineHeight: 1.35 }}>
-            Esto no se monta una vez. Se ajusta cada semana.
-          </div>
-        </Reveal>
-      </div>
-    </SafeZone>
+      </SceneLayout>
+    </AbsoluteFill>
   );
 };

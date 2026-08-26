@@ -16,9 +16,20 @@ export const SceneLayout: React.FC<{
   justify?: React.CSSProperties["justifyContent"];
   /** Escala final del camera push. */
   pushTo?: number;
+  /**
+   * Frames durante los que se aplica el push. Por defecto, toda la escena.
+   * Ponlo más corto para CONGELAR la imagen al final (freeze de cierre).
+   */
+  pushOverFrames?: number;
   children: React.ReactNode;
-}> = ({ durationInFrames, justify = "center", pushTo = 1.04, children }) => {
-  const scale = useCameraPush(durationInFrames, 1, pushTo);
+}> = ({
+  durationInFrames,
+  justify = "center",
+  pushTo = 1.04,
+  pushOverFrames,
+  children,
+}) => {
+  const scale = useCameraPush(pushOverFrames ?? durationInFrames, 1, pushTo);
 
   return (
     <AbsoluteFill style={{ transform: `scale(${scale})`, willChange: "transform" }}>

@@ -90,16 +90,31 @@ export const Odometer: React.FC<{
       {target < 0 ? <span>−</span> : null}
       {places.map((place) => {
         const divisor = Math.pow(10, place);
+        const exact = value / divisor;
+
+        // MECÁNICA DE ODÓMETRO REAL:
+        // - las unidades giran de forma continua,
+        // - las decenas (y superiores) SOLO giran durante el acarreo, es decir
+        //   en el último 10% de la vuelta de la rueda de abajo.
+        // Sin esto, al llegar a 29 las decenas mostrarían un "3" (bug clásico).
+        const position =
+          place === 0
+            ? exact
+            : Math.floor(exact) +
+              Math.min(1, Math.max(0, (exact - Math.floor(exact) - 0.9) * 10));
+
         return (
           <DigitColumn
             key={place}
-            position={value / divisor}
+            position={position}
             maxIndex={Math.ceil(absTarget / divisor)}
             height={height}
           />
         );
       })}
-      {suffix ? <span>{suffix}</span> : null}
+      {suffix ? (
+        <span style={{ marginLeft: "0.16em" }}>{suffix.trim()}</span>
+      ) : null}
     </span>
   );
 };
