@@ -6,18 +6,20 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@remotion/animation-utils": "4.0.518",
     "@remotion/cli": "4.0.518",
     "@remotion/google-fonts": "4.0.518",
-    "@remotion/zod-types": "4.0.518",
-    "@remotion/animation-utils": "4.0.518",
     "@remotion/layout-utils": "4.0.518",
     "@remotion/media-utils": "4.0.518",
+    "@remotion/shapes": "^4.0.518",
+    "@remotion/tailwind-v4": "4.0.518",
+    "@remotion/transitions": "^4.0.518",
+    "@remotion/zod-types": "4.0.518",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "remotion": "4.0.518",
-    "zod": "4.4.3",
-    "@remotion/tailwind-v4": "4.0.518",
-    "tailwindcss": "4.0.0"
+    "tailwindcss": "4.0.0",
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@remotion/eslint-config-flat": "4.0.518",
@@ -32,7 +34,8 @@
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
-    "render": "remotion render EcommercePart1 out/EcommercePart1.mp4 --codec=h264"
+    "render": "remotion render EcommercePart1 out/EcommercePart1.mp4 --codec=h264 --crf=18",
+    "render:scene": "remotion render out/scene.mp4 --codec=h264 --crf=18"
   },
   "sideEffects": [
     "*.css"

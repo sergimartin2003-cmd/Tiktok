@@ -5,6 +5,7 @@
 // =============================================================================
 
 import React from "react";
+import type { SceneProps } from "./types";
 import { interpolate, useCurrentFrame } from "remotion";
 import { Reveal } from "../components/anim";
 import { SafeZone } from "../components/SafeZone";
@@ -67,7 +68,7 @@ const Column: React.FC<{
   );
 };
 
-export const Scene3Comparativa: React.FC = () => {
+export const Scene3Comparativa: React.FC<SceneProps> = () => {
   const frame = useCurrentFrame();
 
   // La columna B se ilumina hacia el final de la escena.

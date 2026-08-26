@@ -5,6 +5,7 @@
 // =============================================================================
 
 import React from "react";
+import type { SceneProps } from "./types";
 import { Reveal } from "../components/anim";
 import { SafeZone } from "../components/SafeZone";
 import { theme } from "../theme";
@@ -15,7 +16,7 @@ const punchlines: { text: string; accent?: boolean }[] = [
   { text: "Domina la atención.", accent: true },
 ];
 
-export const Scene5Cierre: React.FC = () => {
+export const Scene5Cierre: React.FC<SceneProps> = () => {
   return (
     <SafeZone>
       {/* Tres líneas de remate, ritmo rápido */}

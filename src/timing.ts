@@ -4,39 +4,59 @@
 // ⏱️  AQUÍ AJUSTAS LOS TIEMPOS PARA CUAJARLOS CON TU VOZ.
 //
 // `sceneDurationsInSeconds` es la ÚNICA fuente de verdad de la duración.
-// Cambia un número (en segundos) y toda la línea de tiempo se recoloca sola:
-// la duración total de la composición y el `from` de cada escena se recalculan
-// automáticamente. No hace falta tocar nada más.
+// Cambia un número (en SEGUNDOS) y toda la línea de tiempo se recoloca sola:
+// los frames de cada escena, el solape de las transiciones y la duración total
+// de la composición se recalculan automáticamente. Nada está hardcodeado.
 //
 // Orden de las escenas:
 //   [0] INTRO · [1] EL MARGEN · [2] LA ATENCIÓN
 //   [3] DROPSHIPPING vs STOCK · [4] NINGÚN PRODUCTO DURA · [5] CIERRE
 // =============================================================================
 
-export const FPS = 30;
+// Full HD vertical a 60 fps.
+export const FPS = 60;
 
 // 👇 CAMBIA ESTOS NÚMEROS (segundos) para sincronizar con tu locución.
 export const sceneDurationsInSeconds: number[] = [7, 13, 13, 12, 12, 6];
 
+// Duración del solape entre escenas (transición). En segundos, también derivado.
+export const TRANSITION_DURATION_IN_SECONDS = 0.5;
+
 // --- A partir de aquí es cálculo automático: no necesitas tocarlo. ---------
 
-// Duración de cada escena en frames.
-export const sceneDurationsInFrames: number[] = sceneDurationsInSeconds.map(
-  (seconds) => Math.round(seconds * FPS),
+/** Convierte segundos a frames con los fps del proyecto. */
+export const sec = (seconds: number): number => Math.round(seconds * FPS);
+
+// Duración de cada escena en frames (segundos × 60).
+export const sceneDurationsInFrames: number[] =
+  sceneDurationsInSeconds.map(sec);
+
+// Frames que dura cada transición entre escenas.
+export const TRANSITION_DURATION_IN_FRAMES = sec(
+  TRANSITION_DURATION_IN_SECONDS,
 );
 
-// Frame de inicio (offset) de cada escena dentro de la composición.
+// Número de transiciones = huecos entre escenas.
+const TRANSITION_COUNT = Math.max(0, sceneDurationsInFrames.length - 1);
+
+// Duración total de la composición.
+// Las transiciones SOLAPAN escenas, así que restamos ese solape del total.
+export const totalDurationInFrames: number =
+  sceneDurationsInFrames.reduce((sum, duration) => sum + duration, 0) -
+  TRANSITION_COUNT * TRANSITION_DURATION_IN_FRAMES;
+
+// Frame de inicio de cada escena (útil para previsualizar y depurar).
 export const sceneStartsInFrames: number[] = sceneDurationsInFrames.reduce<
   number[]
 >((starts, _duration, index) => {
-  const previousStart = index === 0 ? 0 : starts[index - 1];
-  const previousDuration = index === 0 ? 0 : sceneDurationsInFrames[index - 1];
-  starts.push(previousStart + previousDuration);
+  if (index === 0) {
+    starts.push(0);
+    return starts;
+  }
+  starts.push(
+    starts[index - 1] +
+      sceneDurationsInFrames[index - 1] -
+      TRANSITION_DURATION_IN_FRAMES,
+  );
   return starts;
 }, []);
-
-// Duración total de la composición (suma de todas las escenas).
-export const totalDurationInFrames: number = sceneDurationsInFrames.reduce(
-  (sum, duration) => sum + duration,
-  0,
-);

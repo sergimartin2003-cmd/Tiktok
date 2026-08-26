@@ -1,53 +1,111 @@
 // =============================================================================
-// Composition.tsx — Ensamblado de la composición "EcommercePart1"
+// Composition.tsx — Montaje final de "EcommercePart1".
 // -----------------------------------------------------------------------------
-// Cada escena se coloca en su <Sequence> con `from` y `durationInFrames`
-// calculados desde timing.ts. Si cambias un número en `sceneDurationsInSeconds`
-// (timing.ts), TODA la línea de tiempo se recoloca aquí automáticamente.
+// Las escenas se encadenan con <TransitionSeries> (@remotion/transitions):
+// nunca hay cortes secos. Cada escena recibe su duración desde timing.ts, y las
+// transiciones solapan escenas (por eso la duración total resta ese solape).
 // =============================================================================
 
 import React from "react";
-import { AbsoluteFill, Sequence } from "remotion";
-import { Grain } from "./components/Grain";
+import { AbsoluteFill } from "remotion";
+import { TransitionSeries, linearTiming } from "@remotion/transitions";
+import { slide } from "@remotion/transitions/slide";
+import { wipe } from "@remotion/transitions/wipe";
+import { clockWipe } from "@remotion/transitions/clock-wipe";
+import { PostFX } from "./components/PostFX";
+import { SCENES } from "./scenes/registry";
 import { theme } from "./theme";
 import {
+  TRANSITION_DURATION_IN_FRAMES,
   sceneDurationsInFrames,
-  sceneStartsInFrames,
 } from "./timing";
 
-import { Scene0Intro } from "./scenes/Scene0Intro";
-import { Scene1Margen } from "./scenes/Scene1Margen";
-import { Scene2Atencion } from "./scenes/Scene2Atencion";
-import { Scene3Comparativa } from "./scenes/Scene3Comparativa";
-import { Scene4Ciclo } from "./scenes/Scene4Ciclo";
-import { Scene5Cierre } from "./scenes/Scene5Cierre";
+// Timing común a todas las transiciones (deriva de timing.ts).
+const timing = linearTiming({
+  durationInFrames: TRANSITION_DURATION_IN_FRAMES,
+});
 
-// El orden de este array define el orden de la línea de tiempo y debe coincidir
-// con el orden de `sceneDurationsInSeconds` en timing.ts.
-const scenes: React.FC[] = [
-  Scene0Intro,
-  Scene1Margen,
-  Scene2Atencion,
-  Scene3Comparativa,
-  Scene4Ciclo,
-  Scene5Cierre,
-];
+/**
+ * Una transición por cada corte entre escenas (5 cortes para 6 escenas).
+ * El tipo de corte se elige por INTENCIÓN NARRATIVA, no al azar.
+ */
+const transitionAfterScene = (index: number): React.ReactNode => {
+  const key = `transition-${index}`;
+  switch (index) {
+    case 0: // INTRO → MARGEN: bajamos a la cuenta
+      return (
+        <TransitionSeries.Transition
+          key={key}
+          presentation={slide({ direction: "from-bottom" })}
+          timing={timing}
+        />
+      );
+    case 1: // MARGEN → ATENCIÓN: cambio de tema, barrido limpio
+      return (
+        <TransitionSeries.Transition
+          key={key}
+          presentation={wipe({ direction: "from-left" })}
+          timing={timing}
+        />
+      );
+    case 2: // ATENCIÓN → COMPARATIVA: desplazamiento lateral
+      return (
+        <TransitionSeries.Transition
+          key={key}
+          presentation={slide({ direction: "from-right" })}
+          timing={timing}
+        />
+      );
+    case 3: // COMPARATIVA → CICLO: el tiempo pasa (barrido de reloj)
+      return (
+        <TransitionSeries.Transition
+          key={key}
+          presentation={clockWipe({
+            width: theme.video.width,
+            height: theme.video.height,
+          })}
+          timing={timing}
+        />
+      );
+    default: // CICLO → CIERRE: remate
+      return (
+        <TransitionSeries.Transition
+          key={key}
+          presentation={slide({ direction: "from-bottom" })}
+          timing={timing}
+        />
+      );
+  }
+};
 
 export const EcommercePart1: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: theme.colors.background }}>
-      {/* Grano sutil por encima del fondo, por debajo del texto */}
-      <Grain />
+      <TransitionSeries>
+        {SCENES.flatMap((scene, index) => {
+          const duration = sceneDurationsInFrames[index];
+          const Scene = scene.component;
 
-      {scenes.map((Scene, index) => (
-        <Sequence
-          key={index}
-          from={sceneStartsInFrames[index]}
-          durationInFrames={sceneDurationsInFrames[index]}
-        >
-          <Scene />
-        </Sequence>
-      ))}
+          const sequence = (
+            <TransitionSeries.Sequence
+              key={scene.id}
+              durationInFrames={duration}
+            >
+              <Scene durationInFrames={duration} />
+            </TransitionSeries.Sequence>
+          );
+
+          // Tras cada escena (menos la última) va su transición.
+          if (index === SCENES.length - 1) {
+            return [sequence];
+          }
+
+          return [sequence, transitionAfterScene(index)];
+        })}
+      </TransitionSeries>
+
+      {/* Post: viñeta + grano, por encima de todo. */}
+      <PostFX />
     </AbsoluteFill>
   );
 };

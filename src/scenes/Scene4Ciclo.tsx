@@ -5,6 +5,7 @@
 // =============================================================================
 
 import React from "react";
+import type { SceneProps } from "./types";
 import { interpolate, useCurrentFrame } from "remotion";
 import { Reveal } from "../components/anim";
 import { SafeZone } from "../components/SafeZone";
@@ -43,7 +44,7 @@ const LifecycleCurve: React.FC<{ delay: number }> = ({ delay }) => {
   );
 };
 
-export const Scene4Ciclo: React.FC = () => {
+export const Scene4Ciclo: React.FC<SceneProps> = () => {
   return (
     <SafeZone>
       {/* Titular */}

@@ -5,6 +5,7 @@
 // =============================================================================
 
 import React from "react";
+import type { SceneProps } from "./types";
 import { Reveal } from "../components/anim";
 import { SafeZone } from "../components/SafeZone";
 import { theme } from "../theme";
@@ -33,7 +34,7 @@ const blocks: string[] = [
   "Esto no va de vender productos. Va de captar atención y convertirla en compra.",
 ];
 
-export const Scene2Atencion: React.FC = () => {
+export const Scene2Atencion: React.FC<SceneProps> = () => {
   return (
     <SafeZone justify="center">
       <div style={{ display: "flex", flexDirection: "column", gap: 56, maxWidth: 840 }}>

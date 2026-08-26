@@ -5,6 +5,7 @@
 // =============================================================================
 
 import React from "react";
+import type { SceneProps } from "./types";
 import { Reveal, useCountUp } from "../components/anim";
 import { SafeZone } from "../components/SafeZone";
 import { theme } from "../theme";
@@ -63,7 +64,7 @@ const MarginRow: React.FC<{
   );
 };
 
-export const Scene1Margen: React.FC = () => {
+export const Scene1Margen: React.FC<SceneProps> = () => {
   return (
     <SafeZone>
       {/* Frase de apoyo */}
